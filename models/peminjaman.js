@@ -3,8 +3,11 @@ const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Peminjaman extends Model {
     static associate(models) {
-      Peminjaman.belongsTo(models.Anggota, { foreignKey: "anggotaId" });
-      Peminjaman.belongsTo(models.Buku, { foreignKey: "bukuId", as: "Buku" });
+      Peminjaman.belongsTo(models.Anggota, {
+        foreignKey: "anggotaId",
+        as: "anggota",
+      });
+      Peminjaman.belongsTo(models.Buku, { foreignKey: "bukuId", as: "buku" });
     }
   }
   Peminjaman.init(
@@ -14,6 +17,10 @@ module.exports = (sequelize, DataTypes) => {
       tanggalPinjam: DataTypes.DATE,
       tanggalKembali: DataTypes.DATE,
       status: DataTypes.STRING,
+      denda: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
     },
     {
       sequelize,
