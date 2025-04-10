@@ -7,5 +7,4 @@ router.get("/detail/:id", anggotaController.getById);
 router.post("/create", anggotaController.create);
 router.put("/update/:id", anggotaController.update);
 router.delete("/delete/:id", anggotaController.delete);
-
 module.exports = router;
