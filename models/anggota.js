@@ -3,19 +3,23 @@ const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Anggota extends Model {
     static associate(models) {
+      Anggota.belongsTo(models.Admin, { foreignKey: "adminId" });
       Anggota.hasMany(models.Peminjaman, { foreignKey: "anggotaId" });
-      Anggota.belongsTo(models.Admin, {
-        foreignKey: "AdminId",
-        as: "admin",
-      });
     }
   }
   Anggota.init(
     {
-      nama: DataTypes.STRING,
-      alamat: DataTypes.STRING,
-      noHp: DataTypes.STRING,
-      AdminId: DataTypes.INTEGER,
+      nis: DataTypes.STRING,
+      nama_siswa: DataTypes.STRING,
+      kelas: DataTypes.STRING,
+      jenis_kelamin: DataTypes.ENUM("L", "P"),
+      tgl_lahir: DataTypes.DATE,
+      email: DataTypes.STRING,
+      nohp: DataTypes.STRING,
+      image: DataTypes.STRING,
+      password: DataTypes.STRING,
+      adminId: DataTypes.INTEGER,
+      role: DataTypes.ENUM("admin", "anggota"),
     },
     {
       sequelize,

@@ -10,7 +10,8 @@ app.use(express.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 
 const router = require("./src/routes");
-app.use("/api/v1", router);
+const authRoutes = require("./src/routes/authRoutes/authRoutes");
+app.use("/api/v1", authRoutes);
 
 app.get("/", (req, res) => {
   res.send("");

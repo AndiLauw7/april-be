@@ -9,16 +9,16 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      title: {
+      judul_buku: {
         type: Sequelize.STRING
       },
-      author: {
+      pengarang: {
         type: Sequelize.STRING
       },
-      year: {
-        type: Sequelize.INTEGER
+      tahun_terbit: {
+        type: Sequelize.STRING
       },
-      stock: {
+      stok: {
         type: Sequelize.INTEGER
       },
       createdAt: {
