@@ -19,7 +19,10 @@ module.exports = (sequelize, DataTypes) => {
       image: DataTypes.STRING,
       password: DataTypes.STRING,
       adminId: DataTypes.INTEGER,
-      role: DataTypes.ENUM("admin", "anggota"),
+      role: {
+        type: DataTypes.ENUM("admin", "anggota"),
+        defaultValue: "anggota",
+      },
     },
     {
       sequelize,
