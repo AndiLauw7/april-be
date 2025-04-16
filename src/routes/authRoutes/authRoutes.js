@@ -3,6 +3,7 @@ const router = express.Router();
 const authController = require("../../controllers/authController/authController");
 const bukuController = require("../../controllers/bukuController");
 const peminjamanController = require("../../controllers/peminjamanController");
+const anggotaController = require("../../controllers/anggotaController");
 const {
   verifikasiToken,
 } = require("../../middlewares/authMiddleware/authMiddleware");
@@ -28,6 +29,14 @@ router.get("/peminjaman/get-peminjam", peminjamanController.getAllPeminjam);
 router.put(
   "/peminjaman/update-peminjam/:id",
   peminjamanController.updatePeminjam
+);
+
+router.get("/anggota/get-all", anggotaController.getAllAnggota);
+router.get("/anggota/get-byid/:id", anggotaController.getAnggotaById);
+router.put(
+  "/anggota/update/:id",
+  verifikasiToken,
+  anggotaController.updateAnggota
 );
 
 router.get("/admin/data", verifikasiToken, (req, res) => {
