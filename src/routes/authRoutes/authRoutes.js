@@ -38,7 +38,11 @@ router.put(
   verifikasiToken,
   anggotaController.updateAnggota
 );
-
+router.get(
+  "/anggota/profile",
+  verifikasiToken,
+  anggotaController.getProfileAnggota
+);
 router.get("/admin/data", verifikasiToken, (req, res) => {
   res.json({ message: "Ini data rahasia admin", user: req.user });
 });

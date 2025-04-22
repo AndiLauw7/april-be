@@ -47,17 +47,19 @@ exports.getAllPeminjam = async (req, res) => {
 exports.updatePeminjam = async (req, res) => {
   try {
     const id = req.params.id;
-    console.log("BODY REQUEST:", req.body);
-    const { status } = req.body;
+    // const { status } = req.body;
+    const status =
+      typeof req.body.status === "object"
+        ? req.body.status.status
+        : req.body.status;
+    let denda = 0;
+    console.log("denda", denda);
     console.log("status", status);
-
+    console.log("BODY REQUEST:", req.body);
     const dataPeminjaman = await Peminjaman.findByPk(id);
     if (!dataPeminjaman) {
       return res.status(404).json({ message: "Data peminjam tidak ditemukan" });
     }
-
-    let denda = 0;
-    console.log("denda", denda);
 
     if (status === "dikembalikan" && dataPeminjaman.status !== "dikembalikan") {
       const hariIni = new Date();
@@ -71,10 +73,13 @@ exports.updatePeminjam = async (req, res) => {
       }
 
       const dataBuku = await Buku.findByPk(dataPeminjaman.bukuId);
-      await dataBuku.update({ stok: dataBuku.stok + 1 });
+      // await dataBuku.update({ stok: dataBuku.stok + 1 });
+      if (dataBuku) {
+        await dataBuku.update({ stok: dataBuku.stok + 1 });
+      }
     }
 
-    await dataPeminjaman.update({ status, denda });
+    await dataPeminjaman.update({ status: status, denda });
     res
       .status(200)
       .json({ message: "Peminjaman diperbarui", data: dataPeminjaman });

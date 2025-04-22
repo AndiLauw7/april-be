@@ -20,7 +20,7 @@ exports.getAllAnggota = async (req, res) => {
 exports.getAnggotaById = async (req, res) => {
   try {
     const id = req.params.id;
-    const anggota = await Anggota.findByPk(id);
+    const anggota = await Anggota.findByPk(id, {});
     if (!anggota)
       return res
         .status(404)
@@ -77,5 +77,27 @@ exports.updateAnggota = async (req, res) => {
     res
       .status(500)
       .json({ message: "Gagal update anggota", error: error.message });
+  }
+};
+
+exports.getProfileAnggota = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const anggota = await Anggota.findByPk(userId, {
+      attributes: { exclude: ["password"] },
+    });
+
+    if (!anggota) {
+      return res.status(404).json({ message: "Anggota tidak ditemukan" });
+    }
+
+    res.status(200).json({
+      message: "Data anggota berhasil ditemukan",
+      anggota,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Gagal mengambil profil", error: error.message });
   }
 };
