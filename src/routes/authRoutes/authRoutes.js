@@ -4,6 +4,7 @@ const authController = require("../../controllers/authController/authController"
 const bukuController = require("../../controllers/bukuController");
 const peminjamanController = require("../../controllers/peminjamanController");
 const anggotaController = require("../../controllers/anggotaController");
+const adminController = require("../../controllers/adminController");
 const {
   verifikasiToken,
 } = require("../../middlewares/authMiddleware/authMiddleware");
@@ -17,6 +18,10 @@ router.post(
   verifikasiToken,
   authController.adminAddAnggota
 );
+router.post("/login", authController.loginUser);
+
+router.get("/admin/profile", verifikasiToken, adminController.getProfileAdmin);
+
 
 router.post("/buku/add-buku", bukuController.addBuku);
 router.get("/buku/get-buku", bukuController.getAllbuku);

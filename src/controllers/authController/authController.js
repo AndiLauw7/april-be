@@ -74,6 +74,20 @@ exports.registerAnggota = async (req, res) => {
   }
 };
 
+exports.loginAnggota = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const anggota = await Anggota.findOne({ where: { email } });
+    if (!anggota) return res.status(404).json({ message: "Anggota not Found" });
+
+    const match = await comparePassword(password, anggota.password);
+    if (!match) return res.status(401).json({ message: "Invalid credentials" });
+    const token = await generateToken({ id: anggota.id, role: "anggota" });
+    res.status(201).json({ message: "Login Berhasil", token });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 exports.adminAddAnggota = async (req, res) => {
   try {
     if (req.user.role !== "admin") {
@@ -132,17 +146,40 @@ exports.adminAddAnggota = async (req, res) => {
   }
 };
 
-exports.loginAnggota = async (req, res) => {
+exports.loginUser = async (req, res) => {
+  const { email, password } = req.body;
   try {
-    const { email, password } = req.body;
-    const anggota = await Anggota.findOne({ where: { email } });
-    if (!anggota) return res.status(404).json({ message: "Anggota not Found" });
+    let userAdmin = await Admin.findOne({ where: { email } });
+    if (userAdmin) {
+      const match = await comparePassword(password, userAdmin.password);
+      if (!match)
+        return res.status(401).json({ message: "Invalid credentials" });
+      const token = await generateToken({ id: userAdmin.id, role: "admin" });
+      return res.status(200).json({
+        message: "Login Admin Berhasil",
+        token,
+        role: "admin",
+      });
+    }
+    let userAnggota = await Anggota.findOne({ where: { email } });
+    if (userAnggota) {
+      const match = await comparePassword(password, userAnggota.password);
+      if (!match)
+        return res.status(401).json({ message: "Invalid credentials" });
 
-    const match = await comparePassword(password, anggota.password);
-    if (!match) return res.status(401).json({ message: "Invalid credentials" });
-    const token = await generateToken({ id: anggota.id, role: "anggota" });
-    res.status(201).json({ message: "Login Berhasil", token });
+      const token = await generateToken({
+        id: userAnggota.id,
+        role: "anggota",
+      });
+      return res.status(200).json({
+        message: "Login Anggota Berhasil",
+        token,
+        role: "anggota",
+      });
+    }
+    return res.status(404).json({ message: "Email tidak ditemukan" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({ message: "Terjadi kesalahan server" });
   }
 };
