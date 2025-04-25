@@ -173,6 +173,7 @@ exports.loginUser = async (req, res) => {
       });
       return res.status(200).json({
         message: "Login Anggota Berhasil",
+        // jk
         token,
         role: "anggota",
       });
