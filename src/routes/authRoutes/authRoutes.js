@@ -10,6 +10,8 @@ const {
 } = require("../../middlewares/authMiddleware/authMiddleware");
 
 router.post("/admin/register", authController.registerAdmin);
+router.post("/admin/register-no-invite", authController.registerAdminNoInvite);
+
 router.post("/admin/login", authController.loginAdmin);
 router.post("/anggota/register", authController.registerAnggota);
 router.post("/anggota/login", authController.loginAnggota);
@@ -18,8 +20,8 @@ router.post(
   verifikasiToken,
   authController.adminAddAnggota
 );
-router.post("/login", authController.loginUser);
 
+router.post("/login", authController.loginUser);
 router.get("/admin/profile", verifikasiToken, adminController.getProfileAdmin);
 
 

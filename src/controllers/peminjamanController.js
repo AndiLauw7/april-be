@@ -30,9 +30,15 @@ exports.createPeminjaman = async (req, res) => {
 exports.getAllPeminjam = async (req, res) => {
   try {
     const dataPeminjman = await Peminjaman.findAll({
-      include: [Buku, Anggota],
-      order: [["createdAt", "Desc"]],
-      exclude: [["password"]],
+      include: [
+        {
+          model: Buku,
+          as: "buku",
+          attributes: ["judul_buku", "pengarang", "tahun_terbit", "stok"],
+        },
+        { model: Anggota, attributes: { exclude: ["password"] } },
+      ],
+      order: [["createdAt", "DESC"]],
     });
     res.status(200).json({
       message: "Menampilkan data seluruh peminjam",

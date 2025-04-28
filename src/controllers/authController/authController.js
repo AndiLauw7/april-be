@@ -44,26 +44,48 @@ exports.registerAdmin = async (req, res) => {
   }
 };
 
-exports.loginAdmin = async (req, res) => {
+exports.registerAdminNoInvite = async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const admin = await Admin.findOne({ where: { email } });
-    if (!admin) return res.status(404).json({ message: "Admin not Found" });
+    const { nama, email, password } = req.body;
 
-    const match = await comparePassword(password, admin.password);
-    if (!match) return res.status(401).json({ message: "Invalid Credentials" });
+    // Cek apakah email sudah terdaftar sebagai admin
+    const existingAdmin = await Admin.findOne({ where: { email } });
+    if (existingAdmin) {
+      return res.status(400).json({ message: "Email sudah terdaftar" });
+    }
 
-    const token = await generateToken({ id: admin.id, role: "admin" });
+    // Enkripsi password
+    const hashed = await hasPassword(password);
 
-    // res.json({ token });
+    // Membuat admin baru
+    const admin = await Admin.create({
+      nama,
+      email,
+      password: hashed,
+    });
+
+    // Generate token untuk admin
+    const token = await generateToken({
+      id: admin.id,
+      email: admin.email,
+      role: admin.role,
+    });
+
     res.status(201).json({
-      message: "Login succes",
-      token,
+      admin: {
+        id: admin.id,
+        nama: admin.nama,
+        email: admin.email,
+        role: admin.role,
+      },
+      token: token,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+
 
 exports.registerAnggota = async (req, res) => {
   try {
@@ -103,20 +125,6 @@ exports.registerAnggota = async (req, res) => {
   }
 };
 
-exports.loginAnggota = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const anggota = await Anggota.findOne({ where: { email } });
-    if (!anggota) return res.status(404).json({ message: "Anggota not Found" });
-
-    const match = await comparePassword(password, anggota.password);
-    if (!match) return res.status(401).json({ message: "Invalid credentials" });
-    const token = await generateToken({ id: anggota.id, role: "anggota" });
-    res.status(201).json({ message: "Login Berhasil", token });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 exports.adminAddAnggota = async (req, res) => {
   try {
     if (req.user.role !== "admin") {
@@ -211,5 +219,41 @@ exports.loginUser = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Terjadi kesalahan server" });
+  }
+};
+
+exports.loginAnggota = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const anggota = await Anggota.findOne({ where: { email } });
+    if (!anggota) return res.status(404).json({ message: "Anggota not Found" });
+
+    const match = await comparePassword(password, anggota.password);
+    if (!match) return res.status(401).json({ message: "Invalid credentials" });
+    const token = await generateToken({ id: anggota.id, role: "anggota" });
+    res.status(201).json({ message: "Login Berhasil", token });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+exports.loginAdmin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const admin = await Admin.findOne({ where: { email } });
+    if (!admin) return res.status(404).json({ message: "Admin not Found" });
+
+    const match = await comparePassword(password, admin.password);
+    if (!match) return res.status(401).json({ message: "Invalid Credentials" });
+
+    const token = await generateToken({ id: admin.id, role: "admin" });
+
+    // res.json({ token });
+    res.status(201).json({
+      message: "Login succes",
+      token,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
