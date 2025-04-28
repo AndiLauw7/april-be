@@ -35,6 +35,12 @@ router.put(
   "/peminjaman/update-peminjam/:id",
   peminjamanController.updatePeminjam
 );
+router.get(
+  "/peminjaman/get-peminjam/:id",
+  peminjamanController.getPeminjamanByAnggota
+);
+
+
 
 router.get("/anggota/get-all", anggotaController.getAllAnggota);
 router.get("/anggota/get-byid/:id", anggotaController.getAnggotaById);

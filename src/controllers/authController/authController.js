@@ -1,12 +1,29 @@
-const { Admin, Anggota } = require("../../../models");
+const { Admin, Anggota, InviteCode } = require("../../../models");
 const { generateToken } = require("../../utils/generateToken");
 const { hasPassword, comparePassword } = require("../../utils/hashPassword");
 
 exports.registerAdmin = async (req, res) => {
   try {
-    const { nama, email, password } = req.body;
+    const { nama, email, password, inviteCode } = req.body;
+
+    const validInvite = await InviteCode.findOne({
+      where: { code: inviteCode, used: false },
+    });
+    if (!validInvite) {
+      return res
+        .status(400)
+        .json({ message: "Invite code tidak valid atau sudah dipakai" });
+    }
+
     const hashed = await hasPassword(password);
-    const admin = await Admin.create({ nama, email, password: hashed });
+    const admin = await Admin.create({
+      nama,
+      email,
+      password: hashed,
+      inviteCodeId: validInvite.id,
+    });
+    validInvite.used = true;
+    await validInvite.save();
     const token = await generateToken({
       id: admin.id,
       email: admin.email,
@@ -65,9 +82,21 @@ exports.registerAnggota = async (req, res) => {
       jenis_kelamin,
       password: hashed,
     });
+
+    const token = await generateToken({
+      id: anggota.id,
+      email: anggota.email,
+      role: "anggota",
+    });
     res.status(201).json({
       message: "Registrasi Berhasil",
-      anggota,
+      anggota: {
+        id: anggota.id,
+        nama_siswa: anggota.nama_siswa,
+        email: anggota.email,
+        role: "anggota",
+      },
+      token,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

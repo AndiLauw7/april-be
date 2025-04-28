@@ -89,3 +89,29 @@ exports.updatePeminjam = async (req, res) => {
     res.status(500).json({ message: "Gagal update data peminjaman" });
   }
 };
+
+exports.getPeminjamanByAnggota = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const peminjaman = await Peminjaman.findAll({
+      where: { anggotaId: id },
+      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: Buku,
+          as: "buku",
+          attributes: ["id", "judul_buku", "pengarang"],
+        },
+      ],
+    });
+    if (!peminjaman.length) {
+      return res
+        .status(404)
+        .json({ message: "Data peminjaman tidak ditemukan" });
+    }
+    res.json({ peminjaman });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Terjadi kesalahan server" });
+  }
+};
