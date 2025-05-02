@@ -36,6 +36,7 @@ exports.getAnggotaById = async (req, res) => {
 exports.updateAnggota = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log("Updating anggota with ID:", id);
 
     const anggota = await Anggota.findByPk(id);
     if (!anggota) {
@@ -43,11 +44,10 @@ exports.updateAnggota = async (req, res) => {
     }
 
     const user = req.user;
-    console.log("User ID:", req.user.id); // ID pengguna yang sedang login
-    console.log("Anggota ID:", anggota.id); // ID anggota yang ingin diperbarui
-
+    console.log("Request received by user:", user);
     if (user.role === "admin") {
       const { email, password } = req.body;
+      console.log("Admin update with:", { email, password });
       if (!email && !password) {
         return res.status(400).json({
           message:
@@ -68,6 +68,8 @@ exports.updateAnggota = async (req, res) => {
           .json({ message: "Kamu hanya bisa update data pribadi sendiri" });
       }
       const { nama_siswa, nohp, email, image } = req.body;
+      console.log("Anggota update with:", { nama_siswa, nohp, email, image });
+
       await anggota.update({ nama_siswa, nohp, email, image });
       return res
         .status(200)
