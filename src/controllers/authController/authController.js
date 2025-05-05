@@ -85,8 +85,6 @@ exports.registerAdminNoInvite = async (req, res) => {
   }
 };
 
-
-
 exports.registerAnggota = async (req, res) => {
   try {
     const { nis, nama_siswa, email, password, kelas, jenis_kelamin } = req.body;

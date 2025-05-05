@@ -7,6 +7,7 @@ const anggotaController = require("../../controllers/anggotaController");
 const adminController = require("../../controllers/adminController");
 const {
   verifikasiToken,
+  isAdmin,
 } = require("../../middlewares/authMiddleware/authMiddleware");
 
 router.post("/admin/register", authController.registerAdmin);
@@ -23,7 +24,22 @@ router.post(
 
 router.post("/login", authController.loginUser);
 router.get("/admin/profile", verifikasiToken, adminController.getProfileAdmin);
+router.get(
+  "/admin/get-all",
 
+  verifikasiToken,
+  adminController.getAllAdmin
+);
+router.put(
+  "/admin/update-admin/:id",
+  verifikasiToken,
+  adminController.updateAdmin
+);
+router.delete(
+  "/admin/delete-admin/:id",
+  verifikasiToken,
+  adminController.deleteAdmin
+);
 
 router.post("/buku/add-buku", bukuController.addBuku);
 router.get("/buku/get-buku", bukuController.getAllbuku);
@@ -41,8 +57,6 @@ router.get(
   "/peminjaman/get-peminjam/:id",
   peminjamanController.getPeminjamanByAnggota
 );
-
-
 
 router.get("/anggota/get-all", anggotaController.getAllAnggota);
 router.get("/anggota/get-byid/:id", anggotaController.getAnggotaById);
